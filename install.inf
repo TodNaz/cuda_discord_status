@@ -1,0 +1,26 @@
+[info]
+title=Discord rich presence
+desc=Plugin for displaying your status in the discord.
+type=cudatext-plugin
+subdir=cuda_cudadrp
+homepage=https://github.com/TodNaz/cudadrp
+
+[item1]
+section=events
+events=on_app_activate,on_app_deactivate,on_close,on_exit,on_open,on_save,on_start,on_tab_change,on_change
+
+[item2]
+section=commands
+caption=Discord rich presence\connect
+method=connect
+
+[item3]
+section=commands
+caption=Discord rich presence\dissconnect
+method=close_session
+
+[item4]
+section=commands
+caption=Discord rich presence\restart
+method=restart
+
