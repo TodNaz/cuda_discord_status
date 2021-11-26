@@ -67,7 +67,7 @@ class Command:
         self.dissconnect()
         
     def on_open(self, ed_self):
-        pass
+        self.update_presence(ed_self)
         
     def on_save(self, ed_self):
         if self.is_connect:
@@ -91,7 +91,11 @@ class Command:
         if proj_basename != "":
             name_proj = proj_basename
         else:
-            name_proj = "Empty"
+            nodes = proj_info['nodes']
+            if len(nodes) != 0:
+                name_proj = os.path.split(nodes[0])[-1:][0]
+            else:
+                name_proj = "Empty"
         
         name = os.path.basename(ed_self.get_filename())
         ext = os.path.splitext(ed_self.get_filename())[1][1:]
@@ -168,7 +172,6 @@ class Command:
         self.last_small_text = "CudaText"
         self.last_state = "Editing " + name
         self.last_details = name_proj
-        self.last_time = time.time()
         
         if large_text == "":
             large_text = "Unknown format"
