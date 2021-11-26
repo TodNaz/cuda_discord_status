@@ -98,6 +98,10 @@ class Command:
                 name_proj = "Empty"
         
         name = os.path.basename(ed_self.get_filename())
+        
+        if name == "":
+            name = "untitled"
+        
         ext = os.path.splitext(ed_self.get_filename())[1][1:]
         icon = "file"
         large_text = ext
