@@ -18,13 +18,11 @@ Everything is simple and concise. Supports the following file formats for displa
 * GLSL shader source file format
 
 How to make it work:
-1. Install the cudadrp plugin.
-2. Clone / download the repository `https://github.com/qwertyquerty/pypresence` to a temporary folder, 
-from there move the `pypresence` folder to the editor folder: `.../CudaText/py/pypresence`
-3. Restart the editor.
+1. Download / clone the repository to the CudaText editor plugins folder.
+2. Restart the editor.
 
 How to customize the desired label in the activity:
-1. Create a file `cudadrp.ini` in the editor folder` settings`. 
+1. Create a file `cuda_discord_status.ini` in the editor folder` settings`. 
 2. They will write using the template to a file:
 ```ini
 [rich_presence]

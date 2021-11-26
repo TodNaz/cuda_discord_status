@@ -2,14 +2,14 @@ import os
 from cudatext import *
 from cudax_lib import get_translation
 import cuda_project_man as proj
-from pypresence import Presence
+from .pypresence import Presence
 import time
 
 _   = get_translation(__file__)  # I18N
 
 class Command:
     def __init__(self):
-        self.fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'cudadrp.ini')
+        self.fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'cuda_discord_status.ini')
         
         self.state_text = ini_read(self.fn_config, "rich_presence", "state_text" ,"Editing {filename}")
         self.details_text = ini_read(self.fn_config, "rich_presence", "details_text", "Workspace: {project}")
@@ -27,7 +27,7 @@ class Command:
         self.last_time = time.time()
 
     def config(self):
-        self.fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'cudadrp.ini')
+        self.fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'cuda_discord_status.ini')
         self.state_text = ini_read(self.fn_config, "rich_presence", "state_text" ,"Editing {filename}")
         self.details_text = ini_read(self.fn_config, "rich_presence", "details_text", "Workspace: {project}")
     

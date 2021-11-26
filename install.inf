@@ -1,9 +1,9 @@
 [info]
-title=Discord rich presence
+title=Discord status
 desc=Plugin for displaying your status in the discord.
 type=cudatext-plugin
-subdir=cuda_cudadrp
-homepage=https://github.com/TodNaz/cudadrp
+subdir=cuda_discord_status
+homepage=https://github.com/TodNaz/cuda_discord_status
 
 [item1]
 section=events
