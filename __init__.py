@@ -106,7 +106,7 @@ class Command:
             name = "untitled"
         
         icon = "file"
-        large_text = ext
+        large_text = "Unknown type"
            
         lexer = ed_self.get_prop(PROP_LEXER_FILE, '')
         
