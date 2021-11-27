@@ -63,7 +63,7 @@ class Command:
         self.connect_discord()
         
     def edit_card(self):
-        result = dlg_input_ex(3, "Card editing dialogs.", "Title of the card:", "Workspace {project}", "Details of the card:cuda", "Edition {filename}{edit}", "Do I need to count the time(true/false)","true")
+        result = dlg_input_ex(3, "Edit card...", "Title of the card:", "Workspace {project}", "Details of the card:cuda", "Editing {filename}{edit}", "Do I need to count the time(true/false)","true")
         if result is None:
             return
         
@@ -83,6 +83,12 @@ class Command:
         if self.last_make and self.is_connect:
             self.last_make = 0
             if self.count_time:
+                if self.last_state == "":
+                    ft = ed_self.get_prop(PROP_FONT)[0]
+                    ed = ""
+                    _state = self.state_text.format(filename="untitled", project="Empty", line_count=0, count_symbols=0, vers=app_exe_version(), font=ft, edit=ed)
+                    _details = self.details_text.format(filename="untitled", project="Empty", line_count=0, count_symbols=0, vers=app_exe_version(), font=ft, edit=ed)
+            
                 self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details, start=self.last_time)
             else:
                 self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details)
