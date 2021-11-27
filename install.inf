@@ -26,5 +26,5 @@ method=restart
 
 [item5]
 section=commands
-caption=Discord Status\Edit card
+caption=Discord Status\Edit card...
 method=edit_card
