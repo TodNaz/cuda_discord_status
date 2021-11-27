@@ -52,7 +52,7 @@ class Command:
         self.connect_discord()
         
         if not self.is_connect:
-            msg_box("Failed to connect to discord!", MBOK | MB_ICONERROR);
+            msg_box("Failed to connect to discord!", MB_OK | MB_ICONERROR);
 
     def close_session(self):
         self.rpc.close()
@@ -63,12 +63,12 @@ class Command:
         self.connect_discord()
         
     def edit_card(self):
-        result = dlg_input_ex(3, "Card editing dialogs.", "Title of the card:", "Workspace {project}", "Details of the card:", "Edition {filename}{edit}", "Do I need to count the time(true/false)","true")
+        result = dlg_input_ex(3, "Card editing dialogs.", "Title of the card:", "Workspace {project}", "Details of the card:cuda", "Edition {filename}{edit}", "Do I need to count the time(true/false)","true")
         if result is None:
             return
         
         if result[2] not in ['true', 'false']:
-            msg_box("Third parameter: You only had to specify `true` or `false`.", MBOK | MB_ICONERROR)
+            msg_box("Third parameter: You only had to specify `true` or `false`.", MB_OK | MB_ICONERROR)
             return
         
         ini_write(self.fn_config, "rich_presence", "state_text", result[0])
