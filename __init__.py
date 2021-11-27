@@ -63,7 +63,7 @@ class Command:
         self.connect_discord()
         
     def edit_card(self):
-        result = dlg_input_ex(3, "Edit card...", "Title of the card:", "Workspace {project}", "Details of the card:cuda", "Editing {filename}{edit}", "Do I need to count the time(true/false)","true")
+        result = dlg_input_ex(3, "Edit card", "Title of the card:", "Workspace {project}", "Details of the card:cuda", "Editing {filename}{edit}", "Do I need to count the time(true/false)","true")
         if result is None:
             return
         
