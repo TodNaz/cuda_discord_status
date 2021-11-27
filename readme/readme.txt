@@ -9,6 +9,7 @@ Everything is simple and concise. Supports the following file formats for displa
 * Vue file (.vue)
 * HTML/CSS file format (.html, .css)
 * Rust source file (.rs)
+* Pascal source file (.pas)
 * JSON/INI config format (.json, .ini)
 * Bash/Batch script format (.bash, .bat, .cmd)
 * Perl source file (.pl)
@@ -22,12 +23,16 @@ How to make it work:
 2. Restart the editor.
 
 How to customize the desired label in the activity:
-1. Create a file `cuda_discord_status.ini` in the editor folder` settings`. 
+1. Find the 'Plugins/Discord Status/Edit card' panel and click on it. You will see a panel for editing the card.
+or
+1. Create a file `cuda_discord_status.ini` in the editor folder` settings` or edit if it exists/=. 
 2. They will write using the template to a file:
 ```ini
 [rich_presence]
 state_text=
 details_text=
+autoconnect=false
+count_time=true
 ```
 3. In the empty fields, enter the inscriptions that you need in the activity plate. 
 To display data about the current file / project and other information, write an 
@@ -40,6 +45,9 @@ of the file. The following attributes are available for displaying data:
 * {vers} - The version of the editor being used.
 * {font} - Shows the currently used font
 * {edit} - Shows an asterisk if the file is not saved and is being edited, otherwise nothing.
+
+autoconnect - boolean variable, whether it is necessary to connect to the discord automatically.
+count_time - a boolean variable, whether it is necessary to count the time spent in the program and without action.
 
 Authors:
   TodNaz, https://github.com/Todnaz

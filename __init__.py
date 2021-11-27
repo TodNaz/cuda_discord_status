@@ -3,9 +3,16 @@ from cudatext import *
 from cudax_lib import get_translation
 import cuda_project_man as proj
 from .pypresence import Presence
+from threading import Thread
 import time
 
 _   = get_translation(__file__)  # I18N
+
+def strbool(string):
+    if string == "true":
+        return 1
+    else:
+        return 0
 
 class Command:
     def __init__(self):
@@ -13,6 +20,8 @@ class Command:
         
         self.state_text = ini_read(self.fn_config, "rich_presence", "state_text" ,"Editing {filename}")
         self.details_text = ini_read(self.fn_config, "rich_presence", "details_text", "Workspace: {project}")
+        self.autoconnect = strbool(ini_read(self.fn_config, "rich_presence", "autoconnect", "false"))
+        self.count_time = strbool(ini_read(self.fn_config, "rich_presence", "count_time", "true"))
         
         self.rpc = Presence('913493054747447386')
         self.is_connect = 0
@@ -30,17 +39,25 @@ class Command:
         self.fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'cuda_discord_status.ini')
         self.state_text = ini_read(self.fn_config, "rich_presence", "state_text" ,"Editing {filename}")
         self.details_text = ini_read(self.fn_config, "rich_presence", "details_text", "Workspace: {project}")
+        self.autoconnect = strbool(ini_read(self.fn_config, "rich_presence", "autoconnect", "false"))
+        self.count_time = strbool(ini_read(self.fn_config, "rich_presence", "count_time", "true"))
     
     def __connect_impl(self):
-        self.rpc.connect()
-        self.is_connect = 1
-        msg_status("[Discord Rich Presence] Connect!")
+        try:
+            self.rpc.connect()
+            self.is_connect = 1
+            app_log(LOG_CONSOLE_ADD, "[Discord Rich Presence] Connect!")
+        except Exception:
+            app_log(LOG_CONSOLE_ADD, "[Discord Rich Presence] Lost connect!")
     
     def connect_discord(self):
         self.__connect_impl()
     
     def connect(self):
         self.connect_discord()
+        
+        if not self.is_connect:
+            msg_box("Failed to connect to discord!", MB_ICONERROR);
 
     def close_session(self):
         self.rpc.close()
@@ -50,15 +67,38 @@ class Command:
         self.close_session()
         self.connect_discord()
         
+    def edit_card(self):
+        result = dlg_input_ex(3, "Card editing dialogs.", "Title of the card.", "Workspace {project}", "Details of the card", "Edition {filename}{edit}", "Do I need to count the time(true/false)","true")
+        if result == None:
+            return
+        
+        if result[2] not in ['true', 'false']:
+            msg_box("Three parameter: You only had to specify `true` or `false`.", MB_ICONERROR)
+            return
+        
+        ini_write(self.fn_config, "rich_presence", "state_text", result[0])
+        ini_write(self.fn_config, "rich_presence", "details_text", result[1])
+        ini_write(self.fn_config, "rich_presence", "count_time", result[2])
+        
+        self.state_text = result[0]
+        self.details_text = result[1]
+        self.count_time = strbool(result[2])
+        
     def on_app_activate(self, ed_self):
-        if self.last_make:
+        if self.last_make and self.is_connect:
             self.last_make = 0
-            self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details, start=self.last_time)
+            if self.count_time:
+                self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details, start=self.last_time)
+            else:
+                self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details)
         
     def on_app_deactivate(self, ed_self):
         if self.is_connect:
             self.last_make = 1
-            self.rpc.update(large_image="inactive", large_text="Not active.", small_image="cuda", small_text="Cuda text", state="Not active.", start=time.time())
+            if self.count_time:
+                self.rpc.update(large_image="inactive", large_text="Not active.", small_image="cuda", small_text="Cuda text", state="Not active.", start=time.time())
+            else:
+                self.rpc.update(large_image="inactive", large_text="Not active.", small_image="cuda", small_text="Cuda text", state="Not active.")
         
     def on_close(self, ed_self):
         pass
@@ -67,17 +107,20 @@ class Command:
         self.dissconnect()
         
     def on_open(self, ed_self):
-        self.update_presence(ed_self)
+        if self.is_connect:
+            self.update_presence(ed_self)
         
     def on_lexer(self, ed_self):
-        self.update_presence(ed_self)
+        if self.is_connect:
+            self.update_presence(ed_self)
         
     def on_save(self, ed_self):
         if self.is_connect:
             self.update_presence(ed_self)
         
     def on_start(self, ed_self):
-        self.connect_discord()
+        if self.autoconnect:
+            self.connect_discord()
         
     def on_tab_change(self, ed_self):
         if self.is_connect:
@@ -89,12 +132,12 @@ class Command:
         
     def update_presence(self, ed_self):
         proj_info = proj.global_project_info
-        proj_basename = os.path.splitext(os.path.basename(proj_info['filename']))[0]
+        proj_basename = os.path.splitext(os.path.basename(proj_info.get('filename')))[0]
         
         if proj_basename != "":
             name_proj = proj_basename
         else:
-            nodes = proj_info['nodes']
+            nodes = proj_info.get('nodes')
             if nodes:
                 name_proj = os.path.split(nodes[0])[-1:][0]
             else:
@@ -161,19 +204,15 @@ class Command:
         elif lexer == "GLSL":
             icon = "opengl"
             large_text = "GLSL shader source file format"
+        elif lexer == "Pascal":
+            icon = "pascal"
+            large_image = "Pascal source file"
         elif name == "dub.json":
             icon = "dubb"
             large_text = "DUB package description file format"
         elif name == "package.json":
             icon = "npm"
             large_text = "NPM package description file format"
-            
-        self.last_large_icon = icon
-        self.last_large_text = large_text
-        self.last_small_icon = "cuda"
-        self.last_small_text = "CudaText"
-        self.last_state = "Editing " + name
-        self.last_details = name_proj
         
         if large_text == "":
             large_text = "Unknown format"
@@ -189,4 +228,14 @@ class Command:
         _state = self.state_text.format(filename=name, project=name_proj, line_count=lc, count_symbols=cs, vers=app_exe_version(), font=ft, edit=ed)
         _details = self.details_text.format(filename=name, project=name_proj, line_count=lc, count_symbols=cs, vers=app_exe_version(), font=ft, edit=ed)
         
-        self.rpc.update(large_image=icon, large_text=large_text, small_image="cuda", small_text="Code editor `CudaText`", state=_state, details=_details, start = self.last_time)
+        self.last_large_icon = icon
+        self.last_large_text = large_text
+        self.last_small_icon = "cuda"
+        self.last_small_text = "Code editor `CudaText`"
+        self.last_state = _state
+        self.last_details = _details
+        
+        if self.count_time:
+            self.rpc.update(large_image=icon, large_text=large_text, small_image="cuda", small_text="Code editor `CudaText`", state=_state, details=_details, start = self.last_time)
+        else:
+            self.rpc.update(large_image=icon, large_text=large_text, small_image="cuda", small_text="Code editor `CudaText`", state=_state, details=_details)

@@ -1,6 +1,6 @@
 [info]
-title=Discord status
-desc=Plugin for displaying your status in the discord.
+title=Discord Status
+desc=Plugin for displaying your status in the Discord
 type=cudatext-plugin
 subdir=cuda_discord_status
 homepage=https://github.com/TodNaz/cuda_discord_status
@@ -23,3 +23,8 @@ method=close_session
 section=commands
 caption=Discord Status\Restart
 method=restart
+
+[item5]
+section=commands
+caption=Discord Status\Edit card
+method=edit_card
