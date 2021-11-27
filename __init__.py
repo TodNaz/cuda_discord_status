@@ -69,6 +69,9 @@ class Command:
     def on_open(self, ed_self):
         self.update_presence(ed_self)
         
+    def on_lexer(self, ed_self):
+        self.update_presence(ed_self)
+        
     def on_save(self, ed_self):
         if self.is_connect:
             self.update_presence(ed_self)
@@ -92,7 +95,7 @@ class Command:
             name_proj = proj_basename
         else:
             nodes = proj_info['nodes']
-            if len(nodes) != 0:
+            if nodes:
                 name_proj = os.path.split(nodes[0])[-1:][0]
             else:
                 name_proj = "Empty"
@@ -102,73 +105,68 @@ class Command:
         if name == "":
             name = "untitled"
         
-        ext = os.path.splitext(ed_self.get_filename())[1][1:]
         icon = "file"
         large_text = ext
+           
+        lexer = ed_self.get_prop(PROP_LEXER_FILE, '')
         
-        if name == "dub.json":
+        if lexer == "Python":
+            icon = "python"
+            large_text = "Python source file"
+        elif lexer == "D":
+            icon = "dlang"
+            large_text = "D'lang source file"
+        elif lexer == "C":
+            icon = "clang"
+            large_text = "C'lang source file"
+        elif lexer == "C++":
+            icon = "cpp"
+            large_text = "C++'lang source file"
+        elif lexer == "JavaScript":
+            icon = "js"
+            large_text = "JavaScript source file"
+        elif lexer == "TypeScript":
+            icon = "typescript"
+            large_text = "TypeScript source file"
+        elif lexer == "Rust":
+            icon = "rust"
+            large_text = "Rust source file"
+        elif lexer == "JSON":
+            icon = "json"
+            large_text = "JSON data interchange format"
+        elif lexer == "Ini files":
+            icon = "ini"
+            large_text = "INI configuration file format"
+        elif lexer in ["Batch files", "Bash script"]:
+            icon = "bash"
+            large_text = "Script file format"
+        elif lexer == "HTML":
+            icon = "html"
+            large_text = "HyperText Markup Language"
+        elif lexer == "CSS":
+            icon = "css"
+            large_text = "Cascading Style Sheets"
+        elif lexer == "Vue":
+            icon = "vue"
+            large_text = "Vue framework file format"
+        elif lexer == "Perl":
+            icon = "perl"
+            large_text = "Perl source file format"
+        elif lexer == "Lua":
+            icon = "lua"
+            large_text = "Lua script/source file format"
+        elif lexer == "PHP":
+            icon = "php"
+            large_text = "PHP source file format"
+        elif lexer == "GLSL":
+            icon = "opengl"
+            large_text = "GLSL shader source file format"
+        elif name == "dub.json":
             icon = "dubb"
             large_text = "DUB package description file format"
         elif name == "package.json":
             icon = "npm"
             large_text = "NPM package description file format"
-        elif ext == "py" or ext == "pyd":
-            icon = "python"
-            large_text = "Python source file"
-        elif ext == "d" or ext == "dd" or ext == "di":
-            icon = "dlang"
-            large_text = "D'lang source file"
-        elif ext == "c" or ext == "h":
-            icon = "clang"
-            large_text = "C'lang source file"
-        elif ext == "cpp" or ext == "hpp":
-            icon = "cpp"
-            large_text = "C++'lang source file"
-        elif ext == "js":
-            icon = "js"
-            large_text = "JavaScript source file"
-        elif ext == "ts":
-            icon = "typescript"
-            large_text = "TypeScript source file"
-        elif ext == "rs":
-            icon = "rust"
-            large_text = "Rust source file"
-        elif ext == "json":
-            icon = "json"
-            large_text = "JSON data interchange format"
-        elif ext == "ini":
-            icon = "ini"
-            large_text = "INI configuration file format"
-        elif ext == "cmd":
-            icon = "bash"
-            large_text = "CMD script file format"
-        elif ext == "bat":
-            icon = "bash"
-            large_text = "Batch script file format"
-        elif ext == "sh":
-            icon = "bash"
-            large_text = "Shell script file format"
-        elif ext == "html":
-            icon = "html"
-            large_text = "HyperText Markup Language"
-        elif ext == "css":
-            icon = "css"
-            large_text = "Cascading Style Sheets"
-        elif ext == "vue":
-            icon = "vue"
-            large_text = "Vue framework file format"
-        elif ext == "pl":
-            icon = "perl"
-            large_text = "Perl source file format"
-        elif ext == "lua":
-            icon = "lua"
-            large_text = "Lua script file format"
-        elif ext == "php":
-            icon = "php"
-            large_text = "PHP source file format"
-        elif ext == "glsl" or ext == "vert" or ext == "frag" or ext == "geom":
-            icon = "opengl"
-            large_text = "GLSL shader source file format"
             
         self.last_large_icon = icon
         self.last_large_text = large_text

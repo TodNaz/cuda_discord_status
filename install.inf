@@ -7,20 +7,19 @@ homepage=https://github.com/TodNaz/cuda_discord_status
 
 [item1]
 section=events
-events=on_app_activate,on_app_deactivate,on_close,on_exit,on_open,on_save,on_start,on_tab_change,on_change
+events=on_app_activate,on_app_deactivate,on_close,on_exit,on_open,on_save,on_start,on_tab_change,on_change,on_lexer
 
 [item2]
 section=commands
-caption=Discord rich presence\connect
+caption=Discord Status\Connect
 method=connect
 
 [item3]
 section=commands
-caption=Discord rich presence\dissconnect
+caption=Discord Status\Disconnect
 method=close_session
 
 [item4]
 section=commands
-caption=Discord rich presence\restart
+caption=Discord Status\Restart
 method=restart
-
