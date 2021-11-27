@@ -41,9 +41,9 @@ class Command:
         try:
             self.rpc.connect()
             self.is_connect = 1
-            app_log(LOG_CONSOLE_ADD, "[Discord Rich Presence] Connect!")
+            app_log(LOG_CONSOLE_ADD, "[Discord Status] Connect!")
         except Exception:
-            app_log(LOG_CONSOLE_ADD, "[Discord Rich Presence] Lost connect!")
+            app_log(LOG_CONSOLE_ADD, "[Discord Status] Lost connect!")
     
     def connect_discord(self):
         self.__connect_impl()
@@ -52,7 +52,7 @@ class Command:
         self.connect_discord()
         
         if not self.is_connect:
-            msg_box("Failed to connect to discord!", MB_ICONERROR);
+            msg_box("Failed to connect to discord!", MBOK | MB_ICONERROR);
 
     def close_session(self):
         self.rpc.close()
@@ -63,12 +63,12 @@ class Command:
         self.connect_discord()
         
     def edit_card(self):
-        result = dlg_input_ex(3, "Card editing dialogs.", "Title of the card.", "Workspace {project}", "Details of the card", "Edition {filename}{edit}", "Do I need to count the time(true/false)","true")
-        if result == None:
+        result = dlg_input_ex(3, "Card editing dialogs.", "Title of the card:", "Workspace {project}", "Details of the card:", "Edition {filename}{edit}", "Do I need to count the time(true/false)","true")
+        if result is None:
             return
         
         if result[2] not in ['true', 'false']:
-            msg_box("Three parameter: You only had to specify `true` or `false`.", MB_ICONERROR)
+            msg_box("Third parameter: You only had to specify `true` or `false`.", MBOK | MB_ICONERROR)
             return
         
         ini_write(self.fn_config, "rich_presence", "state_text", result[0])
@@ -127,7 +127,12 @@ class Command:
         
     def update_presence(self, ed_self):
         proj_info = proj.global_project_info
-        proj_basename = os.path.splitext(os.path.basename(proj_info.get('filename')))[0]
+        proj_filename = proj_info.get('filename')
+        
+        if proj_filename is not None:
+            proj_basename = os.path.splitext(os.path.basename(proj_filename))[0]
+        else:
+            proj_basename = ""
         
         if proj_basename != "":
             name_proj = proj_basename
