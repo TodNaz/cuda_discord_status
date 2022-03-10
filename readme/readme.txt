@@ -44,11 +44,11 @@ of the file. The following attributes are available for displaying data:
 * {line_count} - Insert the line count of the edited file.
 * {count_symbols} - Count the number of characters.
 * {vers} - The version of the editor being used.
-* {font} - Shows the currently used font
 * {edit} - Shows an asterisk if the file is not saved and is being edited, otherwise nothing.
 
 autoconnect - boolean variable, whether it is necessary to connect to the discord automatically.
 count_time - a boolean variable, whether it is necessary to count the time spent in the program and without action.
+inactive_status - boolean value showing whether it is necessary to show a discard in the status of disappointment.
 
 Authors:
   TodNaz, https://github.com/Todnaz
