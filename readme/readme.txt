@@ -23,7 +23,7 @@ How to make it work:
 2. Restart the editor.
 
 How to customize the desired label in the activity:
-1. Find the 'Plugins/Discord Status/Edit card' panel and click on it. You will see a panel for editing the card.
+1. Find the 'Plugins/Discord Status/Setting' panel and click on it. You will see a panel for editing the card.
 or
 1. Create a file `cuda_discord_status.ini` in the editor folder` settings` or edit if it exists/=. 
 2. They will write using the template to a file:
@@ -33,6 +33,7 @@ state_text=
 details_text=
 autoconnect=false
 count_time=true
+inactive_status=true
 ```
 3. In the empty fields, enter the inscriptions that you need in the activity plate. 
 To display data about the current file / project and other information, write an 

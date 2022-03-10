@@ -13,13 +13,19 @@ def strbool(string):
         return 1
     else:
         return 0
+        
+def boolstr(bool):
+    if bool == 1:
+        return "true"
+    else:
+        return "false"
 
 class Command:
     def __init__(self):
         self.fn_config = os.path.join(app_path(APP_DIR_SETTINGS), 'cuda_discord_status.ini')
         self.config()
         
-        self.rpc = Presence('913493054747447386')
+        self.rpc = None
         self.is_connect = 0
         
         self.last_large_icon = ""
@@ -36,17 +42,26 @@ class Command:
         self.details_text = ini_read(self.fn_config, "rich_presence", "details_text", "Workspace: {project}")
         self.autoconnect = strbool(ini_read(self.fn_config, "rich_presence", "autoconnect", "false"))
         self.count_time = strbool(ini_read(self.fn_config, "rich_presence", "count_time", "true"))
+        self.inactive_status = strbool(ini_read(self.fn_config, "rich_presence", "inactive_status", "true"))
     
     def __connect_impl(self):
+        if self.rpc is None:
+            try:
+                self.rpc = Presence('913493054747447386')
+            except Exception:
+                msg_status("[Discord Status] Cannont find discord!")
+    
         try:
             self.rpc.connect()
             self.is_connect = 1
-            app_log(LOG_CONSOLE_ADD, "[Discord Status] Connect!")
+            msg_status("[Discord Status] Connect!")
         except Exception:
-            app_log(LOG_CONSOLE_ADD, "[Discord Status] Lost connect!")
+            msg_status("[Discord Status] Lost connect!")
     
     def connect_discord(self):
         self.__connect_impl()
+        if self.is_connect == 1:
+            self.update_presence(ed_group(0))
     
     def connect(self):
         self.connect_discord()
@@ -63,38 +78,57 @@ class Command:
         self.connect_discord()
         
     def edit_card(self):
-        result = dlg_input_ex(3, "Edit card", "Title of the card:", "Workspace {project}", "Details of the card:cuda", "Editing {filename}{edit}", "Do I need to count the time(true/false)","true")
+        result = dlg_input_ex(5, "Edit card", "Title of the card:", self.state_text, "Details of the card:cuda", self.details_text, "Do I need to count the time (true/false)", boolstr(self.count_time), "Autoconnect? (true/false)", boolstr(self.autoconnect), "Show that you are not active? (true/false)", boolstr(self.inactive_status))
         if result is None:
             return
         
-        if result[2] not in ['true', 'false']:
+        if result[2] not in ['true', 'false'] or result[3] not in ['true', 'false'] or result[4] not in ['true', 'false']:
             msg_box("Third parameter: You only had to specify `true` or `false`.", MB_OK | MB_ICONERROR)
+            return
+        
+        try:
+            _state = result[0].format(filename="test", project="test", line_count="test", count_symbols="test", vers="test", edit="test")
+            _details = result[1].format(filename="test", project="test", line_count="test", count_symbols="test", vers="test", edit="test")
+        except Exception:
+            msg_box("It is not allowed to enter format values other than the specified!", MB_OK | MB_ICONERROR)
             return
         
         ini_write(self.fn_config, "rich_presence", "state_text", result[0])
         ini_write(self.fn_config, "rich_presence", "details_text", result[1])
         ini_write(self.fn_config, "rich_presence", "count_time", result[2])
+        ini_write(self.fn_config, "rich_presence", "autoconnect", result[3])
+        ini_write(self.fn_config, "rich_presence", "inactive_status", result[4])
         
         self.state_text = result[0]
         self.details_text = result[1]
         self.count_time = strbool(result[2])
+        self.autoconnect = strbool(result[3])
+        self.inactive_status = strbool(result[4])
+        
+        if self.is_connect == 1:
+            self.update_presence(ed_group(0))
         
     def on_app_activate(self, ed_self):
         if self.last_make and self.is_connect:
             self.last_make = 0
             if self.count_time:
                 if self.last_state == "":
-                    ft = ed_self.get_prop(PROP_FONT)[0]
                     ed = ""
-                    _state = self.state_text.format(filename="untitled", project="Empty", line_count=0, count_symbols=0, vers=app_exe_version(), font=ft, edit=ed)
-                    _details = self.details_text.format(filename="untitled", project="Empty", line_count=0, count_symbols=0, vers=app_exe_version(), font=ft, edit=ed)
+                    _state = self.state_text.format(filename="untitled", project="Empty", line_count=0, count_symbols=0, vers=app_exe_version(), edit=ed)
+                    _details = self.details_text.format(filename="untitled", project="Empty", line_count=0, count_symbols=0, vers=app_exe_version(), edit=ed)
             
-                self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details, start=self.last_time)
+                try:
+                    self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details, start=self.last_time)
+                except Exception:
+                    return
             else:
-                self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details)
+                try:
+                    self.rpc.update(large_image=self.last_large_icon, large_text=self.last_large_text, small_image="cuda", small_text="Cuda text", state=self.last_state, details=self.last_details)
+                except Exception:
+                    return
         
     def on_app_deactivate(self, ed_self):
-        if self.is_connect:
+        if self.is_connect and self.inactive_status:
             self.last_make = 1
             if self.count_time:
                 self.rpc.update(large_image="inactive", large_text="Not active.", small_image="cuda", small_text="Cuda text", state="Not active.", start=time.time())
@@ -108,6 +142,10 @@ class Command:
         self.dissconnect()
         
     def on_open(self, ed_self):
+        if self.is_connect:
+            self.update_presence(ed_self)
+            
+    def on_focus(self, ed_self):
         if self.is_connect:
             self.update_presence(ed_self)
         
@@ -155,7 +193,7 @@ class Command:
             name = "untitled"
         
         icon = "file"
-        large_text = "Unknown type"
+        large_text = None
            
         lexer = ed_self.get_prop(PROP_LEXER_FILE, '')
         
@@ -180,7 +218,7 @@ class Command:
         elif lexer == "Rust":
             icon = "rust"
             large_text = "Rust source file"
-        elif lexer == "JSON":
+        elif lexer == "JSON" or lexer == "JSON ^":
             icon = "json"
             large_text = "JSON data interchange format"
         elif lexer == "Ini files":
@@ -212,7 +250,22 @@ class Command:
             large_text = "GLSL shader source file format"
         elif lexer == "Pascal":
             icon = "pascal"
-            large_image = "Pascal source file"
+            large_text = "Pascal source file"
+        elif lexer == "Markdown" or lexer == "reStructuredText":
+            icon = "markdown"
+            large_text = "Markdown markup file"
+        elif lexer == "Go":
+            icon = "go"
+            large_text = "Go'lang source file"
+        elif lexer == "XML" or lexer == "XML ^":
+            icon = "xml"
+            large_text = "Extensible Markup Language"
+        elif lexer == "YAML":
+            icon = "yml"
+            large_text = "Ain't Markup Language"
+        elif lexer == "Assembly" or lexer == "Assembly ARM" or lexer == "Assembly AVR" or lexer == "Assembly FASM" or lexer == "Assembly GNU" or lexer == "Assembly JWASM" or lexer == "Assembly MASM x86" or lexer == "Assembly MIPS" or lexer == "Assembly Motorola 68k" or lexer == "Assembly NASM x86" or lexer == "Assembly PowerPC" or lexer == "Assembly RISC-V" or lexer == "Assembly SHARC DSP" or lexer == "Assembly SPARC" or lexer == "Assembly STM32" or lexer == "Assembly Z80 RGBDS" or lexer == "Assembly Z80 SjASM":
+            icon = "asm"
+            large_text = lexer
         elif name == "dub.json":
             icon = "dubb"
             large_text = "DUB package description file format"
@@ -220,19 +273,20 @@ class Command:
             icon = "npm"
             large_text = "NPM package description file format"
         
-        if large_text == "":
-            large_text = "Unknown format"
+        if large_text is None:
+            large_text = lexer
+            if large_text == "":
+                large_text = "Unknown type"
             
         lc = ed_self.get_line_count()
         cs = len(ed_self.get_text_all())
-        ft = ed_self.get_prop(PROP_FONT)[0]
         ed = ""
         
         if ed_self.get_prop(PROP_MODIFIED):
             ed = "*"
             
-        _state = self.state_text.format(filename=name, project=name_proj, line_count=lc, count_symbols=cs, vers=app_exe_version(), font=ft, edit=ed)
-        _details = self.details_text.format(filename=name, project=name_proj, line_count=lc, count_symbols=cs, vers=app_exe_version(), font=ft, edit=ed)
+        _state = self.state_text.format(filename=name, project=name_proj, line_count=lc, count_symbols=cs, vers=app_exe_version(), edit=ed)
+        _details = self.details_text.format(filename=name, project=name_proj, line_count=lc, count_symbols=cs, vers=app_exe_version(), edit=ed)
         
         self.last_large_icon = icon
         self.last_large_text = large_text
@@ -242,6 +296,14 @@ class Command:
         self.last_details = _details
         
         if self.count_time:
-            self.rpc.update(large_image=icon, large_text=large_text, small_image="cuda", small_text="Code editor `CudaText`", state=_state, details=_details, start = self.last_time)
+            try:
+                self.rpc.update(large_image=icon, large_text=large_text, small_image="cuda", small_text="Code editor `CudaText`", state=_state, details=_details, start = self.last_time)
+            except Exception:
+                self.close_session()
+                msg_status("[Discord Status] The connection is lost!!")
         else:
-            self.rpc.update(large_image=icon, large_text=large_text, small_image="cuda", small_text="Code editor `CudaText`", state=_state, details=_details)
+            try:
+                self.rpc.update(large_image=icon, large_text=large_text, small_image="cuda", small_text="Code editor `CudaText`", state=_state, details=_details)
+            except:
+                self.close_session()
+                msg_status("[Discord Status] The connection is lost!")
