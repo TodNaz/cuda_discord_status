@@ -1,25 +1,30 @@
 Plugin for CudaText.
-The plugin is designed to display the status in the discord. 
+Plugin is designed to display the user's status in the Discord. 
 Everything is simple and concise. Supports the following file formats for display:
-* C'lang source file (.c, .h)
-* C++'lang source file (.cpp, .h)
-* D'lang source file (.d, .dd, .di)
-* JavaScript source file (.js)
-* TypeScript source file (.ts)
-* Vue file (.vue)
-* HTML/CSS file format (.html, .css)
-* Rust source file (.rs)
-* Pascal source file (.pas)
-* JSON/INI config format (.json, .ini)
+
+* Assembly (all existing Asm lexer variants)
 * Bash/Batch script format (.bash, .bat, .cmd)
+* C and C++ source file (.c, .h)
+* D'lang source file (.d, .dd, .di)
+* GLSL shader source file format
+* Go'lang source file (.go)
+* HTML and CSS file formats (.html, .css)
+* JSON and Ini config formats (.json, .ini)
+* JavaScript source file (.js)
+* Lua script/source format (.lua)
+* Markdown and reStructuredText markup (.md, .rst)
+* PHP source file format (.php)
+* Pascal source file (.pas)
 * Perl source file (.pl)
 * Python source format (.py)
-* Lua script/source format (.lua)
-* PHP source file format (.php)
-* GLSL shader source file format
+* Rust source file (.rs)
+* TypeScript source file (.ts)
+* Vue file (.vue)
+* XML file (.xml)
+* YAML file (.yml)
 
 How to make it work:
-1. Download / clone the repository to the CudaText editor plugins folder.
+1. Download / clone the repository to the CudaText plugins folder "py".
 2. Restart the editor.
 
 How to customize the desired label in the activity:
@@ -27,6 +32,7 @@ How to customize the desired label in the activity:
 or
 1. Create a file `cuda_discord_status.ini` in the editor folder` settings` or edit if it exists/=. 
 2. They will write using the template to a file:
+
 ```ini
 [rich_presence]
 state_text=
@@ -39,6 +45,7 @@ inactive_status=true
 To display data about the current file / project and other information, write an 
 attribute next to any text, for example: {filename}, which will display the name 
 of the file. The following attributes are available for displaying data:
+
 * {filename} - Insert the name of the edited file.
 * {project} - Insert the name of the project editet file.
 * {line_count} - Insert the line count of the edited file.
@@ -50,6 +57,6 @@ autoconnect - boolean variable, whether it is necessary to connect to the discor
 count_time - a boolean variable, whether it is necessary to count the time spent in the program and without action.
 inactive_status - boolean value showing whether it is necessary to show a discard in the status of disappointment.
 
-Authors:
+Author:
   TodNaz, https://github.com/Todnaz
 License: MIT
