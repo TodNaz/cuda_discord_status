@@ -221,7 +221,7 @@ class Command:
         elif lexer == "JSON" or lexer == "JSON ^":
             icon = "json"
             large_text = "JSON data interchange format"
-        elif lexer == "Ini files":
+        elif lexer in ["Ini files", "Ini files ^"]:
             icon = "ini"
             large_text = "INI configuration file format"
         elif lexer in ["Batch files", "Bash script"]:
@@ -251,19 +251,19 @@ class Command:
         elif lexer == "Pascal":
             icon = "pascal"
             large_text = "Pascal source file"
-        elif lexer == "Markdown" or lexer == "reStructuredText":
+        elif lexer in ["Markdown", "reStructuredText"]:
             icon = "markdown"
             large_text = "Markdown markup file"
         elif lexer == "Go":
             icon = "go"
             large_text = "Go'lang source file"
-        elif lexer == "XML" or lexer == "XML ^":
+        elif lexer in ["XML", "XML ^"]:
             icon = "xml"
             large_text = "Extensible Markup Language"
         elif lexer == "YAML":
             icon = "yml"
-            large_text = "Ain't Markup Language"
-        elif lexer == "Assembly" or lexer == "Assembly ARM" or lexer == "Assembly AVR" or lexer == "Assembly FASM" or lexer == "Assembly GNU" or lexer == "Assembly JWASM" or lexer == "Assembly MASM x86" or lexer == "Assembly MIPS" or lexer == "Assembly Motorola 68k" or lexer == "Assembly NASM x86" or lexer == "Assembly PowerPC" or lexer == "Assembly RISC-V" or lexer == "Assembly SHARC DSP" or lexer == "Assembly SPARC" or lexer == "Assembly STM32" or lexer == "Assembly Z80 RGBDS" or lexer == "Assembly Z80 SjASM":
+            large_text = "YAML"
+        elif lexer.startswith('Assembly'):
             icon = "asm"
             large_text = lexer
         elif name == "dub.json":

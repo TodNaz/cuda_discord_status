@@ -1,0 +1,29 @@
+2021.03.13
++ Added display of INI light lexer in discord status.
++ Added readme/history.txt
+
+2021.03.10
+* When the project is initialized, it no longer connects to the discord, but is moved to the connect button to save startup time.
++ Added an item in the configuration file about whether it is necessary to show in the status about the loss of program focus.
+* Card editing is now a plugin setting, where you can configure auto-connection, whether to show activity, etc.
++ Added XML, Assembler, YAML, Markdown lexer to display in discord status.
+* Fixed a bug where, if the connection was unsuccessful, errors were written as is to the console. Now it is written simply in the status bar.
+
+2021.11.27
+* Now the programming language in the status is displayed depending on the selected file lexer, and not on its extension.
++ Added handling of an event in which a different lexer is selected for a file.
++ Now the programming language in the status is displayed depending on the selected file lexer, and not on its extension.
++ For the configuration, now there are items:
+    `autoconnect` - whether to connect automatically when entering the program.
+    `count_time` - whether to count the time spent in the program.
++ Now information is displayed about whether you have connected to the discord or not.
++ Added a panel for editing the card, instead of editing the configuration. You can still edit the configuration.
++ Added display of pascal lexer in the status.
+
+2021.11.26
++ Added file open event handling for status update in discord.
+* Fixed a bug with revealing the name of the project.
+* Plugin renamed
+
+2021.11.25
+Initial commit
